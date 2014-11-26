@@ -11,6 +11,11 @@ public class Tweet {
 	private String message;
 	private Date date;
 	
+	public String toString(){
+		return "Tweet (" + id + ") Author(" + authorId + ")" 
+				+ " Date : " + date + " : " + message;
+	}
+	
 	public int getId() {
 		return id;
 	}
