@@ -11,6 +11,12 @@ public class User {
 	private String twitterNickname;
 	private Date joinedDate;
 	
+	public String toString(){
+		return "User " + twitterNickname 
+				+ " (id : " + id + ") named " 
+				+ name + " joined : " + joinedDate;
+	}
+	
 	public int getId() {
 		return id;
 	}
