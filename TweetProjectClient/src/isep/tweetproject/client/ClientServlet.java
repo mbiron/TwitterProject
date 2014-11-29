@@ -11,6 +11,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
+
 /**
  * Servlet implementation class ClientServlet
  */
@@ -18,7 +20,7 @@ public class ClientServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String JSP_LOCATION = "/WEB-INF/JSP/";
 	private static final String SERVER_URL = "http://localhost:8080/TweetProjectServer/rest/res/";
-
+	private static Logger log = Logger.getLogger(ClientServlet.class);
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -54,17 +56,21 @@ public class ClientServlet extends HttpServlet {
 		Client client = ClientBuilder.newClient();
 		String url = null;
 		if (action.equals("List Users")) {
+			log.info("List Users");
 			url = SERVER_URL + "users";
 		} else if (action.equals("Get Users tweets")) {
 			String username = request.getParameter("username");
+			log.info("Get Users Tweets for username " + username);
 			if (username == null) {
 				// TODO
 			} else {
 				url = SERVER_URL + "tweets?username=" + username;
 			}
 		} else if (action.equals("List All Tweets")) {
+			log.info("List All Tweets");
 			url = SERVER_URL + "tweets";
 		} else if (action.equals("Fill DB")) {
+			log.info("Fill DB");
 			url = SERVER_URL + "update";
 		} else {
 			// Unknow : throw error
