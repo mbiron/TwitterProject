@@ -1,6 +1,7 @@
 package isep.tweetproject.client;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -58,6 +59,8 @@ public class ClientServlet extends HttpServlet {
 		if (action.equals("List Users")) {
 			log.info("List Users");
 			url = SERVER_URL + "users";
+	
+			//List<User> users = client.target(url).request(MediaType.APPLICATION_JSON).get(users.getClass());
 		} else if (action.equals("Get Users tweets")) {
 			String username = request.getParameter("username");
 			log.info("Get Users Tweets for username " + username);
@@ -65,6 +68,9 @@ public class ClientServlet extends HttpServlet {
 				// TODO
 			} else {
 				url = SERVER_URL + "tweets?username=" + username;
+				
+				Tweet tweet = client.target(url).request(MediaType.APPLICATION_JSON).get(Tweet.class);
+				
 			}
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
@@ -75,7 +81,7 @@ public class ClientServlet extends HttpServlet {
 		} else {
 			// Unknow : throw error
 		}
-		client.target(url).request(MediaType.APPLICATION_JSON);
+		
 	}
 
 }
