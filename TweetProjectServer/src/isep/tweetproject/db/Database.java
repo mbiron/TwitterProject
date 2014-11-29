@@ -20,6 +20,7 @@ public class Database {
 	}
 
 	public static Connection getConnection() throws SQLException {
+		log.debug("Retreiving connection");
 		return dataSource.getConnection();
 	}
 }
