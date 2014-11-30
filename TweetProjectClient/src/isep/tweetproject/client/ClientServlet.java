@@ -1,7 +1,9 @@
 package isep.tweetproject.client;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -45,6 +47,40 @@ public class ClientServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
+	private static List<Tweet> getTweetListFromServer(String username) {
+		Client client = ClientBuilder.newClient();
+
+		log.info("Get Users Tweets for username " + username);
+
+		// Building URL
+		String url = SERVER_URL + "tweets?nickname=" + username;
+
+		// Get datas from server
+		List<Tweet> tweets = client.target(url)
+				.request(MediaType.APPLICATION_JSON)
+				.get(new GenericType<List<Tweet>>() {
+				});
+
+		return tweets;
+	}
+
+	private static List<User> getUserListFromServer() {
+		Client client = ClientBuilder.newClient();
+
+		log.info("List Users");
+
+		// Building URL
+		String url = SERVER_URL + "users";
+
+		// Get datas from server
+		List<User> users = client.target(url)
+				.request(MediaType.APPLICATION_JSON)
+				.get(new GenericType<List<User>>() {
+				});
+
+		return users;
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -60,14 +96,8 @@ public class ClientServlet extends HttpServlet {
 		String url = null;
 
 		if (action.equals("List Users")) {
-			log.info("List Users");
-			url = SERVER_URL + "users";
 
-			// Get datas from server
-			List<User> users = client.target(url)
-					.request(MediaType.APPLICATION_JSON)
-					.get(new GenericType<List<User>>() {
-					});
+			List<User> users = getUserListFromServer();
 
 			// Display result
 			request.setAttribute("users", users);
@@ -78,26 +108,30 @@ public class ClientServlet extends HttpServlet {
 
 		} else if (action.equals("Get Users tweets")) {
 			String username = request.getParameter("username");
-			log.info("Get Users Tweets for username " + username);
+
 			if (username == null || username.isEmpty()) {
 				request.setAttribute("errorNickname",
 						"You must Specify an username!");
 				doGet(request, response);
 			} else {
-				url = SERVER_URL + "tweets?nickname=" + username;
 
-				log.debug(url);
-				List<Tweet> tweets = client.target(url)
-						.request(MediaType.APPLICATION_JSON)
-						.get(new GenericType<List<Tweet>>() {
-						});
+				List<Tweet> tweets = getTweetListFromServer(username);
 
-				if (tweets == null || tweets.isEmpty()) {
-					// TODO
+				if(tweets == null ){
+					request.setAttribute("errorNickname", "Unkown user "
+							+ username);
+					doGet(request, response);
+				}
+				else if (tweets.isEmpty()) {
+					request.setAttribute("errorNickname", "No tweets for user "
+							+ username);
+					doGet(request, response);
 				} else {
 					// Display result
-					request.setAttribute("username", username);
-					request.setAttribute("tweets", tweets);
+					Map<String, List<Tweet>> map = new HashMap<String, List<Tweet>>();
+					map.put(username, tweets);
+					request.setAttribute("map", map);
+
 					String jsp = JSP_LOCATION + "Tweets.jsp";
 					RequestDispatcher dispatcher = getServletContext()
 							.getRequestDispatcher(jsp);
@@ -106,11 +140,24 @@ public class ClientServlet extends HttpServlet {
 			}
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
-			url = SERVER_URL + "tweets";
-			List<Tweet> tweets = client.target(url)
-					.request(MediaType.APPLICATION_JSON)
-					.get(new GenericType<List<Tweet>>() {
-					});
+
+			List<User> users = getUserListFromServer();
+			Map<String, List<Tweet>> map = new HashMap<String, List<Tweet>>();
+
+			for (User user : users) {
+				log.info(user);
+				map.put(user.getTwitterNickname(),
+						getTweetListFromServer(user.getTwitterNickname()));
+			}
+
+			// Display result
+			request.setAttribute("map", map);
+
+			String jsp = JSP_LOCATION + "Tweets.jsp";
+			RequestDispatcher dispatcher = getServletContext()
+					.getRequestDispatcher(jsp);
+			dispatcher.forward(request, response);
+
 		} else if (action.equals("Fill DB")) {
 			log.info("Fill DB");
 			url = SERVER_URL + "update";
@@ -122,7 +169,8 @@ public class ClientServlet extends HttpServlet {
 					.getRequestDispatcher(jsp);
 			dispatcher.forward(request, response);
 		} else {
-			// Unknow : throw error
+			// Unknow action requested
+			throw new ServletException("Unknow action requested");
 		}
 
 	}
