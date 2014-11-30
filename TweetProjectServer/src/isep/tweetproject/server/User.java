@@ -11,6 +11,17 @@ public class User {
 	private String twitterNickname;
 	private Date joinedDate;
 	
+	public User(){
+		
+	}
+	public User(int id, String name, String nickname, Date d)
+	{
+		this.id = id;
+		this.name = name;
+		this.twitterNickname = nickname;
+		this.joinedDate = d;
+	}
+	
 	public String toString(){
 		return "User " + twitterNickname 
 				+ " (id : " + id + ") named " 

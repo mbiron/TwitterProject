@@ -4,6 +4,7 @@ import isep.tweetproject.db.DBHelper;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,8 +26,9 @@ public class RESTService {
 		return "just a text test";
 	}
 
-	@POST
+	@GET
 	@Path("/update")
+	@Produces()
 	public void updateData() {
 		log.info("updateData");
 		DBHelper.updateData();

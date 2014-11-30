@@ -16,6 +16,14 @@ import org.apache.log4j.Logger;
 public class DBHelper {
 	private static Logger log = Logger.getLogger(DBHelper.class);
 
+	/**
+	 * Return a user for the specified name
+	 * 
+	 * @param name
+	 *            User name in Database
+	 * @return An User JSON object
+	 * @see User
+	 */
 	public static User getUserForName(String name) {
 		User user = null;
 		Connection con = null;
@@ -47,6 +55,7 @@ public class DBHelper {
 			e.printStackTrace();
 		} finally {
 			try {
+				log.debug("Closing connection");
 				if (res != null)
 					res.close();
 				if (stat != null)
@@ -62,34 +71,72 @@ public class DBHelper {
 		return user;
 	}
 
+	private static List<User> getFalseUsers() {
+		List<User> users = new ArrayList<User>();
+
+		Date d = new Date(System.currentTimeMillis());
+		users.add(new User(1, "Aymeric", "Ricou", d));
+		users.add(new User(2, "Titi", "Toto", d));
+		users.add(new User(3, "Johny", "Hallyday", d));
+		return users;
+	}
+
+	private static List<Tweet> getFalseTweets() {
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		Date d = new Date(System.currentTimeMillis());
+		tweets.add(new Tweet(1, 1, "Coucou c'est Ricou", d));
+		tweets.add(new Tweet(2, 1, "Coucou c'est ENCORE Ricou", d));
+		tweets.add(new Tweet(3, 1, "Coucou c'est TOUJOURS Ricou", d));
+		tweets.add(new Tweet(4, 2, "YOLOOOOOOOO", d));
+		tweets.add(new Tweet(5, 2, "YOLOOOOOOOO again!", d));
+		return tweets;
+	}
+
+	/**
+	 * Fill DB with false Users & Tweets
+	 */
 	public static void updateData() {
 		Connection con = null;
 		PreparedStatement stat = null;
 		ResultSet res = null;
+
 		try {
 			con = Database.getConnection();
 
-			String preparedQuery = "INSERT INTO User VALUES (?,?,?,?)";
-			stat = con.prepareStatement(preparedQuery);
+			for (User user : getFalseUsers()) {
+				String preparedQuery = "INSERT INTO User VALUES (?,?,?,?)";
+				stat = con.prepareStatement(preparedQuery);
 
-			Date d = new Date(System.currentTimeMillis());
-/*
-			stat.setInt(1, 1);
-			stat.setString(2, "Aymeric");
-			stat.setString(3, "Ricou");
-			stat.setDate(4, d);
-*/
-			stat.setInt(1, 2);
-			stat.setString(2, "Toto");
-			stat.setString(3, "Titi");
-			stat.setDate(4, d);
-			stat.executeUpdate();
+				stat.setInt(1, user.getId());
+				stat.setString(2, user.getName());
+				stat.setString(3, user.getTwitterNickname());
+				stat.setDate(4, (java.sql.Date) user.getJoinedDate());
+				try {
+					stat.executeUpdate();
+				} catch (SQLException eDuplicateEntry) {
+					log.warn("Duplicate Entry in DB (User)!");
+				}
+			}
+			for (Tweet tweet : getFalseTweets()) {
+				String preparedQuery = "INSERT INTO Tweet VALUES (?,?,?,?)";
+				stat = con.prepareStatement(preparedQuery);
 
+				stat.setInt(1, tweet.getId());
+				stat.setInt(2, tweet.getAuthorId());
+				stat.setString(3, tweet.getMessage());
+				stat.setDate(4, (java.sql.Date) tweet.getDate());
+				try {
+					stat.executeUpdate();
+				} catch (SQLException eDuplicateEntry) {
+					log.warn("Duplicate Entry in DB (Tweet)!");
+				}
+			}
 		} catch (SQLException e) {
 			log.error("error updating table User");
 			e.printStackTrace();
 		} finally {
 			try {
+				log.debug("Closing connection");
 				if (res != null)
 					res.close();
 				if (stat != null)
@@ -100,10 +147,15 @@ public class DBHelper {
 				log.error("Unable to close connection");
 				e.printStackTrace();
 			}
-
 		}
 	}
 
+	/**
+	 * Return all users in DB
+	 * 
+	 * @return List of User JSON object
+	 * @see User
+	 */
 	public static List<User> getUsers() {
 		Connection con = null;
 		PreparedStatement stat = null;
@@ -134,6 +186,7 @@ public class DBHelper {
 			e.printStackTrace();
 		} finally {
 			try {
+				log.debug("Closing connection");
 				if (res != null)
 					res.close();
 				if (stat != null)
@@ -148,6 +201,14 @@ public class DBHelper {
 		return users;
 	}
 
+	/**
+	 * Return all tweets in DB for the specified userId
+	 * 
+	 * @param userId
+	 *            User Id in Database
+	 * @return List of Tweet JSON object
+	 * @see Tweet
+	 */
 	public static List<Tweet> getTweets(long userId) {
 		Connection con = null;
 		PreparedStatement stat = null;
@@ -156,7 +217,7 @@ public class DBHelper {
 		try {
 			con = Database.getConnection();
 
-			String preparedQuery = "SELECT * FROM Tweets WHERE tweetId LIKE ?";
+			String preparedQuery = "SELECT * FROM Tweet WHERE tweetId LIKE ?";
 			stat = con.prepareStatement(preparedQuery);
 			stat.setLong(1, userId);
 			res = stat.executeQuery();
@@ -173,10 +234,11 @@ public class DBHelper {
 				tweets.add(tweet);
 			}
 		} catch (SQLException e) {
-			log.error("error getting list of books");
+			log.error("error getting list of tweets");
 			e.printStackTrace();
 		} finally {
 			try {
+				log.debug("Closing connection");
 				if (res != null)
 					res.close();
 				if (stat != null)
