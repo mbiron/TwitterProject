@@ -84,13 +84,25 @@ public class ClientServlet extends HttpServlet {
 						"You must Specify an username!");
 				doGet(request, response);
 			} else {
-				url = SERVER_URL + "tweets?username=" + username;
+				url = SERVER_URL + "tweets?nickname=" + username;
 
+				log.debug(url);
 				List<Tweet> tweets = client.target(url)
 						.request(MediaType.APPLICATION_JSON)
 						.get(new GenericType<List<Tweet>>() {
 						});
 
+				if (tweets == null || tweets.isEmpty()) {
+					// TODO
+				} else {
+					// Display result
+					request.setAttribute("username", username);
+					request.setAttribute("tweets", tweets);
+					String jsp = JSP_LOCATION + "Tweets.jsp";
+					RequestDispatcher dispatcher = getServletContext()
+							.getRequestDispatcher(jsp);
+					dispatcher.forward(request, response);
+				}
 			}
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
