@@ -166,7 +166,6 @@ public class DBHelper {
 
 			String preparedQuery = "SELECT * FROM User";
 			stat = con.prepareStatement(preparedQuery);
-
 			res = stat.executeQuery();
 
 			// analyze results
@@ -217,7 +216,7 @@ public class DBHelper {
 		try {
 			con = Database.getConnection();
 
-			String preparedQuery = "SELECT * FROM Tweet WHERE tweetId LIKE ?";
+			String preparedQuery = "SELECT * FROM Tweet WHERE authorId LIKE ?";
 			stat = con.prepareStatement(preparedQuery);
 			stat.setLong(1, userId);
 			res = stat.executeQuery();
