@@ -12,7 +12,12 @@
 			action="/TweetProjectClient/ClientServlet">
 			<input type="submit" name="Send" value="List Users"></input><br>
 			<input type="text" name="username"></input> 
-			<input type="submit" name="Send" value="Get Users tweets"></input><br>
+			<input type="submit" name="Send" value="Get Users tweets"></input>
+			<%String message = (String) request.getAttribute("errorNickname");
+			if(message != null && !message.isEmpty()){%>
+			 <font color="red"><%=message%></font> 
+			<%}%>
+			<br>
 			<input type="submit" name="Send" value="List All Tweets"></input><br>
 			<input type="submit" name="Send" value="Fill DB"></input><br>
 		</form>

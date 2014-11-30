@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ public class ClientServlet extends HttpServlet {
 	private static final String JSP_LOCATION = "/WEB-INF/JSP/";
 	private static final String SERVER_URL = "http://localhost:8080/TweetProjectServer/rest/res/";
 	private static Logger log = Logger.getLogger(ClientServlet.class);
+
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -56,32 +58,61 @@ public class ClientServlet extends HttpServlet {
 
 		Client client = ClientBuilder.newClient();
 		String url = null;
+
 		if (action.equals("List Users")) {
 			log.info("List Users");
 			url = SERVER_URL + "users";
-	
-			//List<User> users = client.target(url).request(MediaType.APPLICATION_JSON).get(users.getClass());
+
+			// Get datas from server
+			List<User> users = client.target(url)
+					.request(MediaType.APPLICATION_JSON)
+					.get(new GenericType<List<User>>() {
+					});
+
+			// Display result
+			request.setAttribute("users", users);
+			String jsp = JSP_LOCATION + "Users.jsp";
+			RequestDispatcher dispatcher = getServletContext()
+					.getRequestDispatcher(jsp);
+			dispatcher.forward(request, response);
+
 		} else if (action.equals("Get Users tweets")) {
 			String username = request.getParameter("username");
 			log.info("Get Users Tweets for username " + username);
-			if (username == null) {
-				// TODO
+			if (username == null || username.isEmpty()) {
+				request.setAttribute("errorNickname",
+						"You must Specify an username!");
+				doGet(request, response);
 			} else {
 				url = SERVER_URL + "tweets?username=" + username;
-				
-				Tweet tweet = client.target(url).request(MediaType.APPLICATION_JSON).get(Tweet.class);
-				
+
+				List<Tweet> tweets = client.target(url)
+						.request(MediaType.APPLICATION_JSON)
+						.get(new GenericType<List<Tweet>>() {
+						});
+
 			}
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
 			url = SERVER_URL + "tweets";
+			List<Tweet> tweets = client.target(url)
+					.request(MediaType.APPLICATION_JSON)
+					.get(new GenericType<List<Tweet>>() {
+					});
 		} else if (action.equals("Fill DB")) {
 			log.info("Fill DB");
 			url = SERVER_URL + "update";
+			client.target(url).request().get();
+
+			// Display result
+			String jsp = JSP_LOCATION + "UpdateDB.jsp";
+			RequestDispatcher dispatcher = getServletContext()
+					.getRequestDispatcher(jsp);
+			dispatcher.forward(request, response);
 		} else {
 			// Unknow : throw error
 		}
-		
+
 	}
 
 }
