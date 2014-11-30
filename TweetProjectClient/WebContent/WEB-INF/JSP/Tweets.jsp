@@ -16,6 +16,7 @@
 				.getAttribute("map");
 		for (Entry<String, List<Tweet>> entry : map.entrySet()) {
 	%>
+	<br>
 	<div>
 		Displaying tweets for user
 		<%=entry.getKey()%></div>

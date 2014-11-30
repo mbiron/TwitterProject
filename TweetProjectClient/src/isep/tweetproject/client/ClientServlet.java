@@ -94,17 +94,13 @@ public class ClientServlet extends HttpServlet {
 
 		Client client = ClientBuilder.newClient();
 		String url = null;
-
+		String jsp = null;
 		if (action.equals("List Users")) {
 
 			List<User> users = getUserListFromServer();
 
-			// Display result
 			request.setAttribute("users", users);
-			String jsp = JSP_LOCATION + "Users.jsp";
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher(jsp);
-			dispatcher.forward(request, response);
+			jsp = JSP_LOCATION + "Users.jsp";
 
 		} else if (action.equals("Get Users tweets")) {
 			String username = request.getParameter("username");
@@ -117,25 +113,20 @@ public class ClientServlet extends HttpServlet {
 
 				List<Tweet> tweets = getTweetListFromServer(username);
 
-				if(tweets == null ){
+				if (tweets == null) {
 					request.setAttribute("errorNickname", "Unkown user "
 							+ username);
 					doGet(request, response);
-				}
-				else if (tweets.isEmpty()) {
+				} else if (tweets.isEmpty()) {
 					request.setAttribute("errorNickname", "No tweets for user "
 							+ username);
 					doGet(request, response);
 				} else {
-					// Display result
 					Map<String, List<Tweet>> map = new HashMap<String, List<Tweet>>();
 					map.put(username, tweets);
 					request.setAttribute("map", map);
 
-					String jsp = JSP_LOCATION + "Tweets.jsp";
-					RequestDispatcher dispatcher = getServletContext()
-							.getRequestDispatcher(jsp);
-					dispatcher.forward(request, response);
+					jsp = JSP_LOCATION + "Tweets.jsp";
 				}
 			}
 		} else if (action.equals("List All Tweets")) {
@@ -150,29 +141,23 @@ public class ClientServlet extends HttpServlet {
 						getTweetListFromServer(user.getTwitterNickname()));
 			}
 
-			// Display result
 			request.setAttribute("map", map);
-
-			String jsp = JSP_LOCATION + "Tweets.jsp";
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher(jsp);
-			dispatcher.forward(request, response);
+			jsp = JSP_LOCATION + "Tweets.jsp";
 
 		} else if (action.equals("Fill DB")) {
 			log.info("Fill DB");
 			url = SERVER_URL + "update";
 			client.target(url).request().get();
 
-			// Display result
-			String jsp = JSP_LOCATION + "UpdateDB.jsp";
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher(jsp);
-			dispatcher.forward(request, response);
+			jsp = JSP_LOCATION + "UpdateDB.jsp";
+
 		} else {
-			// Unknow action requested
 			throw new ServletException("Unknow action requested");
 		}
 
+		// Display result
+		RequestDispatcher dispatcher = getServletContext()
+				.getRequestDispatcher(jsp);
+		dispatcher.forward(request, response);
 	}
-
 }
