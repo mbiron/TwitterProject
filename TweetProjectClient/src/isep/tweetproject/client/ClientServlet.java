@@ -17,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
+//TODO commentaire pour tester le GIT
+
 /**
  * Servlet implementation class ClientServlet
  */
