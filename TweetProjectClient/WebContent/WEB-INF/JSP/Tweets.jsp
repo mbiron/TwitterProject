@@ -9,29 +9,67 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tweets</title>
+
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+
 </head>
 <body>
-	<%
-		Map<String, List<Tweet>> map = (Map<String, List<Tweet>>) request
-				.getAttribute("map");
-		for (Entry<String, List<Tweet>> entry : map.entrySet()) {
-	%>
-	<br>
-	<div>
-		Displaying tweets for user
-		<%=entry.getKey()%></div>
-	<br>
-	<%
-		List<Tweet> tweets = (List<Tweet>) entry.getValue();
-			for (int i = 0; i < tweets.size(); i++) {
-	%>
-	<div><%=tweets.get(i)%></div>
-	<%
-		}
-		}
-	%>
-	<br>
-	<a href="http://localhost:8080/TweetProjectClient/ClientServlet">
-		"Back"</a>
+	<div style="width:50%; margin : auto;">
+		<%
+			Map<String, List<Tweet>> map = (Map<String, List<Tweet>>) request
+					.getAttribute("map");
+			if(map==null || map.isEmpty()){
+				String error = (String) request.getAttribute("errorNickname");
+		%>
+				<br>
+				<div>
+					<%=error%>
+				</div>
+		<%
+			}else{
+				for (Entry<String, List<Tweet>> entry : map.entrySet()) {
+		%>
+					<br>
+					<div Style="color:red">
+						<b>Displaying tweets for user
+						<%=entry.getKey()%>
+						</b>
+					</div>
+					<br>
+					<%
+					List<Tweet> tweets = (List<Tweet>) entry.getValue();%>
+					<table>
+			  		<tr>
+					    <th>Id</th>
+					    <th>Author's Id</th>		
+					    <th>Message</th>
+				     	<th>Date</th>
+				 	</tr>
+					<%for (int i = 0; i < tweets.size(); i++) {
+						%>
+						<tr>
+						    <td><%=tweets.get(i).getId()%></td>
+						    <td><%=tweets.get(i).getAuthorId()%></td>		
+						    <td><%=tweets.get(i).getMessage()%></td>
+					    	<td><%=tweets.get(i).getDate()%></td>
+				  		</tr>
+					<%
+					}%>
+					</table>
+				<%}
+			}
+		%>
+		<br>
+		<a href="http://localhost:8080/TweetProjectClient/ClientServlet">
+			"Back"</a>
+	</div>
 </body>
 </html>

@@ -108,27 +108,31 @@ public class ClientServlet extends HttpServlet {
 			if (username == null || username.isEmpty()) {
 				request.setAttribute("errorNickname",
 						"You must Specify an username!");
-				doGet(request, response);
+//				doGet(request, response);
+				
 			} else {
 
 				List<Tweet> tweets = getTweetListFromServer(username);
 
 				if (tweets == null) {
-					request.setAttribute("errorNickname", "Unkown user "
+					request.setAttribute("errorNickname", "Unknown user "
 							+ username);
-					doGet(request, response);
+//					doGet(request, response);
 				} else if (tweets.isEmpty()) {
-					request.setAttribute("errorNickname", "No tweets for user "
+					request.setAttribute("errorNickname", "No tweet for user "
 							+ username);
-					doGet(request, response);
+//					doGet(request, response);
 				} else {
 					Map<String, List<Tweet>> map = new HashMap<String, List<Tweet>>();
 					map.put(username, tweets);
 					request.setAttribute("map", map);
-
-					jsp = JSP_LOCATION + "Tweets.jsp";
+					
+//					jsp = JSP_LOCATION + "Tweets.jsp";
 				}
 			}
+			
+			jsp = JSP_LOCATION + "Tweets.jsp";
+			
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
 
