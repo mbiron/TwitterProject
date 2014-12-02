@@ -78,6 +78,7 @@ public class DBHelper {
 		users.add(new User(1, "Aymeric", "Ricou", d));
 		users.add(new User(2, "Titi", "Toto", d));
 		users.add(new User(3, "Johny", "Hallyday", d));
+		users.add(new User(4, "Maxime", "Birouille", d));
 		return users;
 	}
 
@@ -89,6 +90,7 @@ public class DBHelper {
 		tweets.add(new Tweet(3, 1, "Coucou c'est TOUJOURS Ricou", d));
 		tweets.add(new Tweet(4, 2, "YOLOOOOOOOO", d));
 		tweets.add(new Tweet(5, 2, "YOLOOOOOOOO again!", d));
+		tweets.add(new Tweet(6, 3, "Allumez le feu!", d));
 		return tweets;
 	}
 
