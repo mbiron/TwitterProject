@@ -33,6 +33,14 @@ public class RESTService {
 		log.info("updateData");
 		DBHelper.updateData();
 	}
+	
+	@GET
+	@Path("/updateTrue")
+	@Produces()
+	public void updateTrueData() {
+		log.info("updateTrueData");
+		DBHelper.updateTrueData();
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

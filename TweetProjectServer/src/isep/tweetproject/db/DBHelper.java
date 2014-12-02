@@ -13,6 +13,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.DirectMessage;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.UserList;
+import twitter4j.UserStreamListener;
+import twitter4j.conf.ConfigurationBuilder;
+
 public class DBHelper {
 	private static Logger log = Logger.getLogger(DBHelper.class);
 
@@ -152,6 +162,199 @@ public class DBHelper {
 		}
 	}
 
+	/**
+	 * Fill DB with TRUE Tweets (in the future)
+	 */
+	public static void updateTrueData() {
+		
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true);
+        cb.setOAuthConsumerKey("u8jyeLqlrlznLeG0UyoyoS5lF");
+        cb.setOAuthConsumerSecret("RvUBlVs3Hqp7Z2zugvX2CMGP40FQGlvOHahtQ2Q8qSxdMSVbxC");
+        cb.setOAuthAccessToken("2902427633-5Abyvynt1B8Z6yyaJOpH7xsDGzJ0UzKAMldkq1j");
+        cb.setOAuthAccessTokenSecret("6kYEmShShXvUAawJs1LNLmUX8uWHxyGLd5lljZBAJF7v6");
+		
+        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+        
+       
+        UserStreamListener listener = new UserStreamListener() {
+			
+			@Override
+			public void onException(Exception arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onTrackLimitationNotice(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onStatus(Status arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onStallWarning(StallWarning arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onScrubGeo(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onDeletionNotice(StatusDeletionNotice arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserProfileUpdate(twitter4j.User arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListUpdate(twitter4j.User arg0, UserList arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListUnsubscription(twitter4j.User arg0,
+					twitter4j.User arg1, UserList arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListSubscription(twitter4j.User arg0,
+					twitter4j.User arg1, UserList arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListMemberDeletion(twitter4j.User arg0,
+					twitter4j.User arg1, UserList arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListMemberAddition(twitter4j.User arg0,
+					twitter4j.User arg1, UserList arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListDeletion(twitter4j.User arg0, UserList arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUserListCreation(twitter4j.User arg0, UserList arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUnfollow(twitter4j.User arg0, twitter4j.User arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUnfavorite(twitter4j.User arg0, twitter4j.User arg1,
+					Status arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onUnblock(twitter4j.User arg0, twitter4j.User arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onFriendList(long[] arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onFollow(twitter4j.User arg0, twitter4j.User arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onFavorite(twitter4j.User arg0, twitter4j.User arg1, Status arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onDirectMessage(DirectMessage arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onDeletionNotice(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onBlock(twitter4j.User arg0, twitter4j.User arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+        
+		
+		twitterStream.addListener(listener);
+		
+//        try {
+//			twitterStream.getScreenName();
+			String[] compte = {"24744541","38142665"};
+			twitterStream.user(compte);
+//		} catch (IllegalStateException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (TwitterException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+        
+        
+//		Twitter unauthenticatedTwitter = new TwitterFactory().getInstance();
+//		//First param of Paging() is the page number, second is the number per page (this is capped around 200 I think.
+//		Paging paging = new Paging(1, 10);
+//		try {
+//			List<Status> statuses = unauthenticatedTwitter.getUserTimeline("monApplicationPourLeProjetISEP,",paging);
+////			log.info("statuses.get(1) = "+statuses.get(1)+"		statuses.get(1).toString() = "+statuses.get(1).toString());
+//			
+//			
+//		} catch (TwitterException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+	}
+	
+	
 	/**
 	 * Return all users in DB
 	 * 
