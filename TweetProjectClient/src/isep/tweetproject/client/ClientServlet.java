@@ -155,7 +155,15 @@ public class ClientServlet extends HttpServlet {
 
 			jsp = JSP_LOCATION + "UpdateDB.jsp";
 
+		} else if(action.equals("Fill TRUE DB")){
+			log.info("Fill TRUE DB");
+			url = SERVER_URL + "updateTrue";
+			client.target(url).request().get();
+
+			jsp = JSP_LOCATION + "UpdateDB.jsp";
+		
 		} else {
+		
 			throw new ServletException("Unknow action requested");
 		}
 

@@ -21,6 +21,7 @@
 			<br><br>
 			<input type="submit" name="Send" value="List All Tweets"></input><br><br>
 			<input type="submit" name="Send" value="Fill DB"></input><br><br>
+			<input type="submit" name="Send" value="Fill TRUE DB"></input><br><br>
 		</form>
 	</div>
 </body>
