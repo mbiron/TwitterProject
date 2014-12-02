@@ -16,7 +16,7 @@ public class Database {
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		dataSource.setUrl(DBURL);
 		dataSource.setUsername("root");
-		dataSource.setPassword("root");
+		dataSource.setPassword("");
 	}
 
 	public static Connection getConnection() throws SQLException {
