@@ -49,7 +49,7 @@ public class DBHelper {
 			// analyze results
 			while (res.next()) {
 				user = new User();
-				user.setId(res.getInt("id"));
+				user.setId(res.getLong("id"));
 				user.setName(res.getString("name"));
 				user.setTwitterNickname((res.getString("twitterNickname")));
 				user.setJoinedDate(res.getDate("joinedDate"));
@@ -123,7 +123,7 @@ public class DBHelper {
 				stat.setLong(1, user.getId());
 				stat.setString(2, user.getName());
 				stat.setString(3, user.getTwitterNickname());
-				stat.setDate(4, (java.sql.Date) user.getJoinedDate());
+				stat.setDate(4, new java.sql.Date(user.getJoinedDate().getTime()));
 				try {
 					stat.executeUpdate();
 				} catch (SQLException eDuplicateEntry) {
@@ -137,7 +137,7 @@ public class DBHelper {
 				stat.setLong(1, tweet.getId());
 				stat.setLong(2, tweet.getAuthorId());
 				stat.setString(3, tweet.getMessage());
-				stat.setDate(4, (java.sql.Date) tweet.getDate());
+				stat.setDate(4, new java.sql.Date(tweet.getDate().getTime()));
 				try {
 					stat.executeUpdate();
 				} catch (SQLException eDuplicateEntry) {
@@ -185,11 +185,12 @@ public class DBHelper {
 		try {
 			for (String username : usersNames) {
 				statuses = twitter.getUserTimeline(username, paging);
+				twitter4j.User user = statuses.get(0).getUser();
+				users.add(new User(user.getId(), user.getName(), user
+						.getScreenName(), user.getCreatedAt()));
 				for (Status stat : statuses) {
-					twitter4j.User user = stat.getUser();
-
-					users.add(new User((int) user.getId(), user.getName(), user
-							.getScreenName(), user.getCreatedAt()));
+					tweets.add(new Tweet(stat.getId(), user.getId(), stat
+							.getText(), stat.getCreatedAt()));
 
 					log.info("TWEET Id: " + stat.getId());
 					log.info("TWEET Date: " + stat.getCreatedAt());
@@ -200,6 +201,7 @@ public class DBHelper {
 					log.info("----------------------------------------------------------");
 				}
 			}
+			insertUserAndTweets(users, tweets);
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -227,7 +229,7 @@ public class DBHelper {
 			// analyze results
 			while (res.next()) {
 				User user = new User();
-				user.setId(res.getInt("id"));
+				user.setId(res.getLong("id"));
 				user.setName(res.getString("name"));
 				user.setTwitterNickname((res.getString("twitterNickname")));
 				user.setJoinedDate(res.getDate("joinedDate"));
@@ -280,8 +282,8 @@ public class DBHelper {
 			// analyze results
 			while (res.next()) {
 				Tweet tweet = new Tweet();
-				tweet.setId(res.getInt("tweetId"));
-				tweet.setAuthorId(res.getInt("authorId"));
+				tweet.setId(res.getLong("tweetId"));
+				tweet.setAuthorId(res.getLong("authorId"));
 				tweet.setMessage((res.getString("message")));
 				tweet.setDate((res.getDate("date")));
 
