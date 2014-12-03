@@ -23,8 +23,8 @@ DROP TABLE IF EXISTS `Tweet`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Tweet` (
-  `tweetId` int(11) NOT NULL,
-  `authorId` int(11) DEFAULT NULL,
+  `tweetId` BIGINT NOT NULL,
+  `authorId` BIGINT DEFAULT NULL,
   `message` char(140) DEFAULT NULL,
   `date` date DEFAULT NULL,
   PRIMARY KEY (`tweetId`),
@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS `User`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `User` (
-  `id` int(11) NOT NULL,
+  `id` BIGINT NOT NULL,
   `name` varchar(20) DEFAULT NULL,
   `twitterNickname` varchar(20) DEFAULT NULL,
   `joinedDate` date DEFAULT NULL,

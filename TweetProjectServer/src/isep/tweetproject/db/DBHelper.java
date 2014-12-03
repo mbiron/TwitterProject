@@ -13,14 +13,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import twitter4j.DirectMessage;
-import twitter4j.StallWarning;
+import twitter4j.Paging;
 import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.UserList;
-import twitter4j.UserStreamListener;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class DBHelper {
@@ -108,6 +105,10 @@ public class DBHelper {
 	 * Fill DB with false Users & Tweets
 	 */
 	public static void updateData() {
+		insertUserAndTweets(getFalseUsers(), getFalseTweets());
+	}
+
+	private static void insertUserAndTweets(List<User> users, List<Tweet> tweets) {
 		Connection con = null;
 		PreparedStatement stat = null;
 		ResultSet res = null;
@@ -115,11 +116,11 @@ public class DBHelper {
 		try {
 			con = Database.getConnection();
 
-			for (User user : getFalseUsers()) {
+			for (User user : users) {
 				String preparedQuery = "INSERT INTO User VALUES (?,?,?,?)";
 				stat = con.prepareStatement(preparedQuery);
 
-				stat.setInt(1, user.getId());
+				stat.setLong(1, user.getId());
 				stat.setString(2, user.getName());
 				stat.setString(3, user.getTwitterNickname());
 				stat.setDate(4, (java.sql.Date) user.getJoinedDate());
@@ -129,12 +130,12 @@ public class DBHelper {
 					log.warn("Duplicate Entry in DB (User)!");
 				}
 			}
-			for (Tweet tweet : getFalseTweets()) {
+			for (Tweet tweet : tweets) {
 				String preparedQuery = "INSERT INTO Tweet VALUES (?,?,?,?)";
 				stat = con.prepareStatement(preparedQuery);
 
-				stat.setInt(1, tweet.getId());
-				stat.setInt(2, tweet.getAuthorId());
+				stat.setLong(1, tweet.getId());
+				stat.setLong(2, tweet.getAuthorId());
 				stat.setString(3, tweet.getMessage());
 				stat.setDate(4, (java.sql.Date) tweet.getDate());
 				try {
@@ -166,195 +167,45 @@ public class DBHelper {
 	 * Fill DB with TRUE Tweets (in the future)
 	 */
 	public static void updateTrueData() {
-		
+
+		String usersNames[] = { "@StartupVillage", "@GlassFrance", "@altolabs" };
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true);
-        cb.setOAuthConsumerKey("u8jyeLqlrlznLeG0UyoyoS5lF");
-        cb.setOAuthConsumerSecret("RvUBlVs3Hqp7Z2zugvX2CMGP40FQGlvOHahtQ2Q8qSxdMSVbxC");
-        cb.setOAuthAccessToken("2902427633-5Abyvynt1B8Z6yyaJOpH7xsDGzJ0UzKAMldkq1j");
-        cb.setOAuthAccessTokenSecret("6kYEmShShXvUAawJs1LNLmUX8uWHxyGLd5lljZBAJF7v6");
-		
-        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        
-       
-        UserStreamListener listener = new UserStreamListener() {
-			
-			@Override
-			public void onException(Exception arg0) {
-				// TODO Auto-generated method stub
-				
+		cb.setDebugEnabled(false);
+		cb.setOAuthConsumerKey("u8jyeLqlrlznLeG0UyoyoS5lF");
+		cb.setOAuthConsumerSecret("RvUBlVs3Hqp7Z2zugvX2CMGP40FQGlvOHahtQ2Q8qSxdMSVbxC");
+		cb.setOAuthAccessToken("2902427633-5Abyvynt1B8Z6yyaJOpH7xsDGzJ0UzKAMldkq1j");
+		cb.setOAuthAccessTokenSecret("6kYEmShShXvUAawJs1LNLmUX8uWHxyGLd5lljZBAJF7v6");
+
+		Twitter twitter = new TwitterFactory(cb.build()).getInstance();
+
+		Paging paging = new Paging(1, 10);
+		List<Status> statuses;
+		List<User> users = new ArrayList<>();
+		List<Tweet> tweets = new ArrayList<>();
+		try {
+			for (String username : usersNames) {
+				statuses = twitter.getUserTimeline(username, paging);
+				for (Status stat : statuses) {
+					twitter4j.User user = stat.getUser();
+
+					users.add(new User((int) user.getId(), user.getName(), user
+							.getScreenName(), user.getCreatedAt()));
+
+					log.info("TWEET Id: " + stat.getId());
+					log.info("TWEET Date: " + stat.getCreatedAt());
+					log.info("TWEET User: " + user.getId() + " "
+							+ user.getCreatedAt() + " " + user.getScreenName()
+							+ " " + user.getName());
+					log.info("TWEET Text: " + stat.getText());
+					log.info("----------------------------------------------------------");
+				}
 			}
-			
-			@Override
-			public void onTrackLimitationNotice(int arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onStatus(Status arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onStallWarning(StallWarning arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onScrubGeo(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onDeletionNotice(StatusDeletionNotice arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserProfileUpdate(twitter4j.User arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListUpdate(twitter4j.User arg0, UserList arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListUnsubscription(twitter4j.User arg0,
-					twitter4j.User arg1, UserList arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListSubscription(twitter4j.User arg0,
-					twitter4j.User arg1, UserList arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListMemberDeletion(twitter4j.User arg0,
-					twitter4j.User arg1, UserList arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListMemberAddition(twitter4j.User arg0,
-					twitter4j.User arg1, UserList arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListDeletion(twitter4j.User arg0, UserList arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUserListCreation(twitter4j.User arg0, UserList arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUnfollow(twitter4j.User arg0, twitter4j.User arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUnfavorite(twitter4j.User arg0, twitter4j.User arg1,
-					Status arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onUnblock(twitter4j.User arg0, twitter4j.User arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onFriendList(long[] arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onFollow(twitter4j.User arg0, twitter4j.User arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onFavorite(twitter4j.User arg0, twitter4j.User arg1, Status arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onDirectMessage(DirectMessage arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onDeletionNotice(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onBlock(twitter4j.User arg0, twitter4j.User arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-        
-		
-		twitterStream.addListener(listener);
-		
-//        try {
-//			twitterStream.getScreenName();
-			String[] compte = {"24744541","38142665"};
-			twitterStream.user(compte);
-//		} catch (IllegalStateException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (TwitterException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-        
-        
-//		Twitter unauthenticatedTwitter = new TwitterFactory().getInstance();
-//		//First param of Paging() is the page number, second is the number per page (this is capped around 200 I think.
-//		Paging paging = new Paging(1, 10);
-//		try {
-//			List<Status> statuses = unauthenticatedTwitter.getUserTimeline("monApplicationPourLeProjetISEP,",paging);
-////			log.info("statuses.get(1) = "+statuses.get(1)+"		statuses.get(1).toString() = "+statuses.get(1).toString());
-//			
-//			
-//		} catch (TwitterException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	
+
 	/**
 	 * Return all users in DB
 	 * 
