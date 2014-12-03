@@ -108,8 +108,8 @@ public class ClientServlet extends HttpServlet {
 			if (username == null || username.isEmpty()) {
 				request.setAttribute("errorNickname",
 						"You must Specify an username!");
-//				doGet(request, response);
-				
+				// doGet(request, response);
+
 			} else {
 
 				List<Tweet> tweets = getTweetListFromServer(username);
@@ -117,22 +117,22 @@ public class ClientServlet extends HttpServlet {
 				if (tweets == null) {
 					request.setAttribute("errorNickname", "Unknown user "
 							+ username);
-//					doGet(request, response);
+					// doGet(request, response);
 				} else if (tweets.isEmpty()) {
 					request.setAttribute("errorNickname", "No tweet for user "
 							+ username);
-//					doGet(request, response);
+					// doGet(request, response);
 				} else {
 					Map<String, List<Tweet>> map = new HashMap<String, List<Tweet>>();
 					map.put(username, tweets);
 					request.setAttribute("map", map);
-					
-//					jsp = JSP_LOCATION + "Tweets.jsp";
+
+					// jsp = JSP_LOCATION + "Tweets.jsp";
 				}
 			}
-			
+
 			jsp = JSP_LOCATION + "Tweets.jsp";
-			
+
 		} else if (action.equals("List All Tweets")) {
 			log.info("List All Tweets");
 
@@ -155,21 +155,21 @@ public class ClientServlet extends HttpServlet {
 
 			jsp = JSP_LOCATION + "UpdateDB.jsp";
 
-		} else if(action.equals("Fill TRUE DB")){
+		} else if (action.equals("Fill TRUE DB")) {
 			log.info("Fill TRUE DB");
 			url = SERVER_URL + "updateTrue";
 			client.target(url).request().get();
 
 			jsp = JSP_LOCATION + "UpdateDB.jsp";
-		
+
 		} else {
-		
 			throw new ServletException("Unknow action requested");
 		}
 
 		// Display result
 		RequestDispatcher dispatcher = getServletContext()
 				.getRequestDispatcher(jsp);
+		log.debug(jsp);
 		dispatcher.forward(request, response);
 	}
 }
