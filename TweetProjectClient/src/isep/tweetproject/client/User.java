@@ -6,10 +6,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class User {
-	private int id;
+	private long id;
 	private String name;
 	private String twitterNickname;
 	private Date joinedDate;
+	
+	public User(){
+		
+	}
+	public User(long id, String name, String nickname, Date d)
+	{
+		this.id = id;
+		this.name = name;
+		this.twitterNickname = nickname;
+		this.joinedDate = d;
+	}
 	
 	public String toString(){
 		return "User " + twitterNickname 
@@ -17,10 +28,10 @@ public class User {
 				+ name + " joined : " + joinedDate;
 	}
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getName() {
